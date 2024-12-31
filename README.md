@@ -1,4 +1,4 @@
-# Mentorship Matching Project
+# AspireAlly - A Mentorship Matching Platform
 
 ## Deployed URL
 
@@ -7,7 +7,7 @@ The application is deployed and accessible at:
 
 ## Overview
 
-The Mentorship Matching Project is a platform that connects mentors and mentees based on shared skills, interests, and professional goals. The application is built using React on the frontend and a backend Node.js with secure authentication mechanisms.
+AspireAlly is a platform that connects mentors and mentees based on shared skills, interests, and professional goals. The application is built using React on the frontend and a backend Node.js with secure authentication mechanisms.
 
 ---
 
