@@ -29,16 +29,23 @@ const Login = () => {
     }
   };
 
+  function signUp() {
+    navigate("/register");
+  }
+
   return (
     <div>
-      <h1>Sign in</h1>
+      <h1>Welcome back!</h1>
+      <h3>Enter your Credentials to access your account</h3>
       <form onSubmit={handleSubmit} id="login-details">
+        <p>Email address:</p>
         <input
           name="email"
           onChange={handleChange}
           placeholder="poppy@example.com"
           required
         />
+        <p>Username:</p>
         <input
           name="password"
           onChange={handleChange}
@@ -46,9 +53,17 @@ const Login = () => {
           type="password"
           required
         />
-        <button type="submit">Sign in</button>
+        <button id="login-btn" type="submit">
+          Sign in
+        </button>
       </form>
       <p id="error">{error ? error : ""}</p>
+      <p id="reg">
+        Don’t have an account?{" "}
+        <button id="reg-btn" onClick={signUp}>
+          Sign Up
+        </button>
+      </p>
     </div>
   );
 };

@@ -43,10 +43,13 @@ const Register = () => {
 
   return (
     <div className="home">
-      <div id="register2">
+      <div id="register">
         <div id="register-details">
-          <h1>Signing up</h1>
-          <form onSubmit={handleSubmit}>
+          <div>
+            <h1>Welcome to AspireAlly!</h1>
+            <h3>Enter your personal details and start your journey with us.</h3>
+          </div>
+          <form id="login-details" onSubmit={handleSubmit}>
             <input
               name="username"
               onChange={handleChange}
@@ -72,8 +75,8 @@ const Register = () => {
                 onClick={togglePasswordVisibility}
                 style={{
                   position: "absolute",
-                  right: "-4%",
-                  top: "-15%",
+                  right: "8%",
+                  top: "-60%",
                   transform: "translateY(-50%)",
                   background: "none",
                   border: "none",

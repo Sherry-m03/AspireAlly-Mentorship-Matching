@@ -78,18 +78,62 @@ AspireAlly is a platform that connects mentors and mentees based on shared skill
 - **Authentication**: JWT (JSON Web Tokens)
 - **Development Tools**: Nodemon, Axios, React Router
 
-## Future Enhancements
+## Setup Instructions
 
-### 1. Chat Feature for Direct Mentor-Mentee Communication
+### Prerequisites
 
-Enable real-time messaging between mentors and mentees for seamless communication.
+Ensure you have the following installed:
 
-### 2. Calendar Integration for Scheduling Mentorship Sessions
+- Node.js (v14 or later)
+- PostgreSQL
+- A modern web browser
 
-Allow users to schedule mentorship sessions with an integrated calendar feature.
+### Steps
 
-### 3. Notifications for New Connection Requests and Updates
+1. **Clone the Repository**:
 
-## Notify users of new connection requests, session reminders, and other updates.
+   ```bash
+   git clone https://github.com/your-repo/mentorship-matching.git
+   cd mentorship-matching
+   ```
+
+2. **Install Dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+3. **Setup Environment Variables**:
+   Create a `.env` file in the root directory and add the following:
+
+   ```env
+   PORT=3000
+   DATABASE_URL=postgresql://<username>:<password>@localhost:5432/mentorship
+   JWT_SECRET=your_jwt_secret
+   ```
+
+4. **Setup Database**:
+   Run the database migrations to create the necessary tables:
+
+   ```bash
+   npm run migrate
+   ```
+
+5. **Start the Server**:
+
+   ```bash
+   npm start
+   ```
+
+   The application will run on `http://localhost:3000`.
+
+6. **Run Frontend**:
+   Navigate to the frontend directory and start the React development server:
+   ```bash
+   cd client
+   npm install
+   npm start
+   ```
+   The frontend will be available at `http://localhost:3001`.
 
 For any issues or contributions, feel free to open an issue or pull request on the repository.
