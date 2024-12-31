@@ -45,7 +45,7 @@ const Login = () => {
           placeholder="poppy@example.com"
           required
         />
-        <p>Username:</p>
+        <p>Password:</p>
         <input
           name="password"
           onChange={handleChange}
