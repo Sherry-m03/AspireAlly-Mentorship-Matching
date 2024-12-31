@@ -3,7 +3,7 @@
 ## Deployed URL
 
 The application is deployed and accessible at:
-[Deployed URL](https://your-deployed-url.com)
+https://aspireally.onrender.com/
 
 ## Overview
 
