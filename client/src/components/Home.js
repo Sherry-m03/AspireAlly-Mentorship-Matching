@@ -16,8 +16,10 @@ export default function Home() {
       </div>
 
       <div id="register">
-        <h1>Welcome to AspireAlly!</h1>
-        <h3>Enter your personal details and start your journey with us.</h3>
+        <div id="reg-head">
+          <h1>Welcome to AspireAlly!</h1>
+          <h3>Enter your personal details and start your journey with us.</h3>
+        </div>
         <button onClick={signUp}>Sign up</button>
       </div>
     </div>

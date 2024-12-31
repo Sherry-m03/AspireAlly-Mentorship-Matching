@@ -42,7 +42,7 @@ const Login = () => {
         <input
           name="password"
           onChange={handleChange}
-          placeholder="12345"
+          placeholder="12345678"
           type="password"
           required
         />

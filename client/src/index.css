@@ -83,6 +83,9 @@ button:active {
   text-align: center;
   align-items: center;
 }
+#reg-head {
+  margin: 5%;
+}
 
 #register2 {
   height: 70vh;
