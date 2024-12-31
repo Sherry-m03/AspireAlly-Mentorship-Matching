@@ -7,12 +7,6 @@ The application is deployed and accessible at:
 
 ## Overview
 
-The Mentorship Matching Project connects mentors and mentees based on their preferences, skills, and goals. This platform facilitates meaningful professional connections, creating opportunities for learning and growth.
-
-# Mentorship Matching Project
-
-## Overview
-
 The Mentorship Matching Project is a platform that connects mentors and mentees based on shared skills, interests, and professional goals. The application is built using React on the frontend and a backend Node.js with secure authentication mechanisms.
 
 ---
