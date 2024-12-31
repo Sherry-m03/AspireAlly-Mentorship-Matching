@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function Profiles() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(
+    parseInt(localStorage.getItem("activeTab")) || 0
+  );
   const Tabs = ["Profile", "Edit"];
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -25,6 +27,8 @@ export default function Profiles() {
 
   const navigate = useNavigate();
 
+  console.log("activeTab:" + activeTab);
+
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
@@ -33,17 +37,25 @@ export default function Profiles() {
         return;
       }
       try {
-        const res = await axios.get("http://localhost:3000/user-profile", {
+        const res = await axios.get("/user-profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (!res?.data?.profile) {
+          setError("Error fetching user data.");
+        }
         setData(res.data);
         setForm({
-          username: res.data.user.username || "",
-          bio: res.data.profile.bio || "",
-          skills: res.data.profile.skills || "",
-          interests: res.data.profile.interests || "",
-          role: res.data.user.role || "",
+          username: res?.data?.user?.username || "",
+          bio: res?.data?.profile?.bio || "",
+          skills: res?.data?.profile?.skills || "",
+          interests: res?.data?.profile?.interests || "",
+          role: res?.data?.user?.role || "",
         });
+        const storedActiveTab = localStorage.getItem("activeTab");
+        if (storedActiveTab === null) {
+          setActiveTab(1);
+          setIsEditingProfile(true);
+        }
       } catch (err) {
         setError("Error fetching user data.");
       }
@@ -67,14 +79,12 @@ export default function Profiles() {
       return;
     }
     try {
-      const res = await axios.put(
-        "http://localhost:3000/profile-update",
-        form,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-    } catch (error) {}
+      const res = await axios.put("/profile-update", form, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error) {
+      setError("Error updating user data.");
+    }
   };
 
   const filterChange = (e) => {
@@ -89,7 +99,7 @@ export default function Profiles() {
       return;
     }
     try {
-      const res = await axios.get("http://localhost:3000/get-users", {
+      const res = await axios.get("/get-users", {
         headers: { Authorization: `Bearer ${token}` },
         params: filters,
       });
@@ -105,22 +115,25 @@ export default function Profiles() {
   const handletabchange = (index) => {
     setActiveTab(index);
     setIsEditingProfile(index !== 0);
+    localStorage.setItem("activeTab", index);
   };
 
   const handleLogout = async () => {
     const token = localStorage.getItem("token");
     localStorage.removeItem("token");
     localStorage.removeItem("userProfile");
+    localStorage.removeItem("activeTab");
     navigate("/");
   };
 
   const handleDeleteProfile = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.delete("http://localhost:3000/delete-profile", {
+      await axios.delete("/delete-profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       localStorage.removeItem("token");
+      localStorage.removeItem("activeTab");
       navigate("/");
     } catch (error) {
       console.error("Error deleting profile:", error);
@@ -241,6 +254,9 @@ export default function Profiles() {
                   </button>
                 </div>
               </div>
+              <p style={{ textAlign: "center" }} id="error">
+                {error}
+              </p>
             </div>
           ) : (
             <div>
@@ -251,18 +267,21 @@ export default function Profiles() {
                   </h1>
                   <div id="profile-detail-info">
                     <p id="detail-head" style={{ fontWeight: "800" }}>
-                      Bio{" "}
+                      Bio
                     </p>
-                    <p>{data?.profile.bio}</p>
+                    <p>{data?.profile?.bio}</p>
                     <p id="detail-head" style={{ fontWeight: "800" }}>
-                      Skills{" "}
+                      Skills
                     </p>
-                    <p>{data?.profile.skills}</p>
+                    <p>{data?.profile?.skills}</p>
                     <p id="detail-head" style={{ fontWeight: "800" }}>
                       Interests
                     </p>
-                    <p>{data?.profile.interests}</p>
+                    <p>{data?.profile?.interests}</p>
                   </div>
+                  <p style={{ textAlign: "center" }} id="error">
+                    {error}
+                  </p>
                 </div>
               </div>
             </div>

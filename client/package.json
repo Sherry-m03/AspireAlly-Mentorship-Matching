@@ -12,11 +12,13 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "cross-env DANGEROUSLY_DISABLE_HOST_CHECK=true react-scripts start",
+    "build": "BUILD_PATH=../server/build react-scripts build",
+    "build-local": "cross-env BUILD_PATH=../server/build react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:3000",
   "eslintConfig": {
     "extends": [
       "react-app",

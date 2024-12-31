@@ -25,12 +25,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (form.password.length < 5) {
-      setError("Password must be at least 5 characters long.");
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters long.");
       return;
     }
     try {
-      const res = await axios.post("http://localhost:3000/register", form);
+      const res = await axios.post("/register", form);
       if (res.status === 200) {
         navigate(-1);
       }

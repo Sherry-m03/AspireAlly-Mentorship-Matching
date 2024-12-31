@@ -14,7 +14,7 @@ export default function ProfileDetails() {
   const fetchRequests = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.get("http://localhost:3000/connection-request", {
+      const res = await axios.get("/connection-request", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllRequests(res?.data?.allRequests);
@@ -39,7 +39,7 @@ export default function ProfileDetails() {
     }
     try {
       const res = await axios.post(
-        "http://localhost:3000/connection-request",
+        "/connection-request",
         { receiverId },
         {
           headers: { Authorization: `Bearer ${token}` },

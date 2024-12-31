@@ -7,12 +7,18 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 dotenv.config();
 
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 
-app.use(cors({ origin: "http://localhost:3001", credentials: true }));
+app.use(cors());
+app.use(express.static(path.join(__dirname, "build")));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
 
 const db = new pg.Client({
   user: process.env.DB_USER,
@@ -20,15 +26,18 @@ const db = new pg.Client({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
-db.connect();
+await db.connect();
 
 app.post("/register", async (req, res) => {
   const { username, email, password, role } = req.body;
   try {
     const existingUser = await db.query(
-      "SELECT * FROM users WHERE email = $1",
+      "SELECT * FROM regusers WHERE email = $1",
       [email]
     );
     if (existingUser.rows.length > 0) {
@@ -38,26 +47,34 @@ app.post("/register", async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       const userResult = await db.query(
-        "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id",
+        "INSERT INTO regusers (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id",
         [username, email, hashedPassword, role]
       );
+
+      if (!userResult.rows[0]?.id) {
+        console.error("Error: No ID returned after user registration");
+        return res
+          .status(500)
+          .json({ error: "Registration failed, please try again" });
+      }
+
       const userId = userResult.rows[0].id;
       await db.query(
-        "INSERT INTO profiles (user_id, username) VALUES ($1, $2)",
-        [userId, username]
+        "INSERT INTO profiles (user_id, username, role) VALUES ($1, $2, $3)",
+        [userId, username, role]
       );
       console.log("User registered successfully");
       return res.status(200).json({ message: "User registered successfully" });
     }
   } catch (err) {
-    console.log("Error in Register");
+    console.log("Error in Register:", err);
     return res.status(404).json({ error: "Error in Register" });
   }
 });
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const userResult = await db.query("SELECT * FROM users WHERE email = $1", [
+  const userResult = await db.query("SELECT * FROM regusers WHERE email = $1", [
     email,
   ]);
   if (userResult.rows.length === 0) {
@@ -80,9 +97,9 @@ app.post("/login", async (req, res) => {
       );
       return res.status(200).json({ token });
     } else {
-      console.log("Error logging in");
+      console.log("Password does not match");
       return res.status(404).json({
-        error: "Error logging in",
+        error: "Password does not match",
       });
     }
   }
@@ -107,10 +124,9 @@ const authenticateToken = (req, res, next) => {
 };
 
 app.get("/user-profile", authenticateToken, async (req, res) => {
-  console.log("Request received for /user-profile");
   const userId = req.user.id;
   try {
-    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
+    const userResult = await db.query("SELECT * FROM regusers WHERE id = $1", [
       userId,
     ]);
     const user = userResult.rows[0];
@@ -139,12 +155,10 @@ app.put("/profile-update", authenticateToken, async (req, res) => {
       "UPDATE profiles SET bio = $1, skills = $2, interests = $3, role = $4, username = $5 WHERE user_id = $6",
       [bio, skills, interests, role, username, userId]
     );
-    await db.query("UPDATE users SET username = $1, role = $2 WHERE id = $3", [
-      username,
-      role,
-      userId,
-    ]);
-    console.log("works");
+    await db.query(
+      "UPDATE regusers SET username = $1, role = $2 WHERE id = $3",
+      [username, role, userId]
+    );
   } catch (err) {
     console.error("Error updating profile:", err);
     return res.status(500).json({ error: "Error updating profile" });
@@ -203,12 +217,7 @@ app.get("/get-users", authenticateToken, async (req, res) => {
       });
       query += `)`;
     }
-
-    console.log(query);
-    console.log(values);
-
     const userList = await db.query(query, values);
-    console.log(userList.rows);
     res.status(200).json({ users: userList.rows });
   } catch (err) {
     console.error("Error getting users:", err);
@@ -219,10 +228,6 @@ app.get("/get-users", authenticateToken, async (req, res) => {
 app.post("/connection-request", authenticateToken, async (req, res) => {
   const { receiverId } = req.body;
   const senderId = req.user.id;
-
-  console.log(receiverId);
-  console.log(senderId);
-
   try {
     const existingRequest = await db.query(
       `SELECT * FROM connection_requests WHERE sender_id = $1 AND receiver_id = $2`,
@@ -251,8 +256,6 @@ app.post("/connection-request", authenticateToken, async (req, res) => {
 
 app.get("/connection-request", authenticateToken, async (req, res) => {
   const userId = req.user.id;
-  console.log("Connection request API hit for user:", userId);
-
   try {
     const allRequests = await db.query(
       `SELECT id, status, sender_id, receiver_id FROM connection_requests WHERE (receiver_id = $1 OR sender_id = $1)`,
@@ -309,7 +312,7 @@ app.post("/connection-request/update", authenticateToken, async (req, res) => {
       "UPDATE connection_requests SET status = $1 WHERE sender_id = $2 AND receiver_id = $3",
       [status, senderId, userId]
     );
-    console.log("connection updated");
+    console.log("Connection Updated");
   } catch (error) {
     console.error("Error fetching connection requests:", error);
     res.status(500).json({ error: "Failed to fetch requests." });
@@ -345,7 +348,7 @@ app.delete("/delete-profile", authenticateToken, async (req, res) => {
       "DELETE FROM connection_requests WHERE sender_id = $1 OR receiver_id = $1",
       [userId]
     );
-    await db.query("DELETE FROM users WHERE id = $1", [userId]);
+    await db.query("DELETE FROM regusers WHERE id = $1", [userId]);
     await db.query("DELETE FROM profiles WHERE user_id = $1", [userId]);
 
     res.status(200).json({ message: "Profile deleted successfully" });
@@ -353,6 +356,14 @@ app.delete("/delete-profile", authenticateToken, async (req, res) => {
     console.error("Error deleting profile:", error);
     res.status(500).json({ error: "Failed to delete profile" });
   }
+});
+
+app.get("/ping", (req, res) => {
+  res.status(200).send("Pong");
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.listen(process.env.PORT);

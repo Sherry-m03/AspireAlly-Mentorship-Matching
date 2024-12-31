@@ -21,7 +21,7 @@ export default function ConnectionRequest() {
   const fetchRequests = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.get("http://localhost:3000/connection-request", {
+      const res = await axios.get("/connection-request", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(res?.data?.requests);
@@ -41,7 +41,7 @@ export default function ConnectionRequest() {
     const token = localStorage.getItem("token");
     try {
       await axios.post(
-        "http://localhost:3000/connection-request/update",
+        "/connection-request/update",
         { senderId, status },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -66,12 +66,9 @@ export default function ConnectionRequest() {
     navigate(0);
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(
-        `http://localhost:3000/connection-request/delete/${requestId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.delete(`/connection-request/delete/${requestId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (status === "sent") {
         setSentRequests(sentRequests.filter((req) => req.id !== requestId));
