@@ -76,7 +76,7 @@ button:active {
   align-items: center;
   justify-content: center;
   margin-left: 8%;
-  padding-top: 4%;
+  padding-top: 2%;
   margin-top: 3%;
 }
 
@@ -121,6 +121,7 @@ button:active {
 }
 
 #reg {
+  margin: 0;
   text-align: center;
 }
 #reg-btn {
@@ -534,4 +535,5 @@ select {
 #error {
   color: red;
   font-size: 12px;
+  text-align: center;
 }

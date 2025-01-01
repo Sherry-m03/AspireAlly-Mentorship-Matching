@@ -41,6 +41,10 @@ const Register = () => {
     }
   };
 
+  function signIn() {
+    navigate("/");
+  }
+
   return (
     <div className="home">
       <div id="register">
@@ -104,6 +108,12 @@ const Register = () => {
             </button>
           </form>
           <p id="error">{error ? error : ""}</p>
+          <p id="reg">
+            Already have an account?{" "}
+            <button id="reg-btn" onClick={signIn}>
+              Sign in
+            </button>
+          </p>
         </div>
       </div>
     </div>

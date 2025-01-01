@@ -2,6 +2,7 @@ import Home from "./components/Home.js";
 import Profile from "./components/Profile.js";
 import ProfileDetails from "./components/ProfileDetails.js";
 import Register from "./components/Register.js";
+import Login from "./components/Login.js";
 import ConnectionRequest from "./components/ConnectionRequest.js";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
